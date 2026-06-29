@@ -12,7 +12,12 @@ class Config:
     # IMPORTANT : chemin ABSOLU pour la base de données.
     # (cf. le souci rencontré avec StoreManager où un chemin relatif posait
     # problème selon l'endroit d'où l'app était lancée — exe vs PythonAnywhere)
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(
+    import os
+
+# ... laissez vos autres configurations ici ...
+
+# Remplacez uniquement la ligne SQLALCHEMY_DATABASE_URI par celle-ci :
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///:memory:')
         INSTANCE_DIR, "chantier_manager.db"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
