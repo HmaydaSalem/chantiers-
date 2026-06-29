@@ -1,27 +1,21 @@
 import os
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-INSTANCE_DIR = os.path.join(BASE_DIR, "instance")
-
-
 class Config:
-    """Configuration de base. Surcharger via variables d'environnement en production."""
+    # 1. Clé secrète (Indispensable pour Flask-Login et les formulaires)
+    # Utilisez une valeur par défaut sûre pour Vercel, 
+    # vous pourrez la définir dans les "Environment Variables" de Vercel plus tard.
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'une-cle-secrete-tres-difficile-a-deviner'
 
-    SECRET_KEY = os.environ.get("SECRET_KEY", "a-changer-absolument-en-production")
-
-    # IMPORTANT : chemin ABSOLU pour la base de données.
-    # (cf. le souci rencontré avec StoreManager où un chemin relatif posait
-    # problème selon l'endroit d'où l'app était lancée — exe vs PythonAnywhere)
-    import os
-
-# ... laissez vos autres configurations ici ...
-
-# Remplacez uniquement la ligne SQLALCHEMY_DATABASE_URI par celle-ci :
-SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///:memory:')
-        INSTANCE_DIR, "chantier_manager.db"
-    )
+    # 2. Configuration corrigée pour la base de données
+    # Sur Vercel, on utilise la mémoire vive, sinon on cherche une variable d'environnement
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///:memory:'
+    
+    # 3. Désactiver le suivi des modifications pour économiser des ressources
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Dossier où sont stockées les photos de chantier uploadées
-    UPLOAD_FOLDER = os.path.join(INSTANCE_DIR, "uploads")
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 Mo max par upload (photos chantier)
+    # 4. Autres paramètres utiles
+    DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
+# Pour vérifier que tout est bien configuré lors du chargement
+if __name__ == "__main__":
+    print(f"Base de données configurée sur : {Config.SQLALCHEMY_DATABASE_URI}")
